@@ -123,6 +123,3 @@ def process_all_pdfs():
     pdf_files = glob.glob(os.path.join(KNOWLEDGE_BASE_PATH, "*.pdf"))
     process_pdfs([os.path.basename(f) for f in pdf_files])
     update_processed_files(os.path.basename(f) for f in pdf_files)
-
-# Initialize the vector store when the module is imported
-initialize_vector_store()

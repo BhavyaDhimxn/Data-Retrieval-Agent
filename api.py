@@ -7,6 +7,7 @@ Dependencies: flask, flask_limiter, redis, langchain.chains
 from flask import Flask, request, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+import os
 import redis
 from vector_store import vector_store, get_processed_files, process_pdfs, update_processed_files
 from llm import cached_llm, raw_prompt
@@ -15,19 +16,22 @@ from langchain.chains import create_retrieval_chain
 from config import RATE_LIMIT, KNOWLEDGE_BASE_PATH, SEARCH_K, SCORE_THRESHOLD
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PDFPlumberLoader
-import os
 
 # Flask app
 flask_app = Flask(__name__)
 
-# Initialize Redis connection for rate limiting
-redis_client = redis.Redis(host='localhost', port=6379, db=0)
+# Decide storage URI for rate limiting: try Redis, fallback to memory for local dev
+storage_uri = "redis://localhost:6379"
+try:
+    redis.Redis(host='localhost', port=6379, db=0).ping()
+except redis.ConnectionError:
+    storage_uri = "memory://"
 
-# Rate limiting with Redis
+# Rate limiting
 limiter = Limiter(
-    get_remote_address,
+    key_func=get_remote_address,
     app=flask_app,
-    storage_uri="redis://localhost:6379",  # Redis URI for rate limiting
+    storage_uri=storage_uri,
     default_limits=[RATE_LIMIT]
 )
 

@@ -1,1 +1,26 @@
-db/chroma.sqlite3
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.sqlite3
+.DS_Store
+
+# Virtualenvs
+slackbot-env/
+venv/
+.env/
+.venv/
+
+# App artifacts
+db/
+chroma.sqlite3
+
+# Knowledge base
+knowledge_base/*.pdf
+knowledge_base/processed_files.txt
+
+# VSCode/IDE
+.vscode/
+.idea/
